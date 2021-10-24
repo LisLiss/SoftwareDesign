@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import ru.akirakozov.sd.refactoring.database.SQLDatabase;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,27 +27,26 @@ public class testServlet {
     @Mock
     private HttpServletResponse response;
 
-    private static void makeRequest(String sqlRequest) {
+    private static void makeRequest(String sqlRequest) throws SQLException {
         try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
             Statement stmt = c.createStatement();
             stmt.executeUpdate(sqlRequest);
             stmt.close();
-        } catch (SQLException e) {
-            throw new RuntimeException();
         }
     }
 
     @Before
-    public void initialize() throws IOException {
+    public void initialize() throws IOException, SQLException {
         MockitoAnnotations.initMocks(this);
-        String sqlRequest = "DROP TABLE IF EXISTS PRODUCT;" +
-                "CREATE TABLE IF NOT EXISTS PRODUCT" +
-                "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-                " NAME           TEXT    NOT NULL, " +
-                " PRICE          INT     NOT NULL);" +
-                "INSERT INTO PRODUCT (NAME, PRICE)" +
+        String sqlRequest = "DROP TABLE IF EXISTS PRODUCT;";
+        makeRequest(sqlRequest);
+
+        SQLDatabase.initializeTable();
+
+        sqlRequest = "INSERT INTO PRODUCT (NAME, PRICE)" +
                 "VALUES (\"apple\", 10), (\"pear\", 20), (\"banana\", 30), (\"orange\", 40);";
         makeRequest(sqlRequest);
+
         stringWriter = new StringWriter();
         printWriter = new PrintWriter(stringWriter);
         Mockito.when(response.getWriter())
