@@ -1,5 +1,7 @@
 package ru.akirakozov.sd.refactoring.htmlPrint;
 
+import ru.akirakozov.sd.refactoring.product.ProductDTO;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -10,7 +12,7 @@ public class HTMLPrinter {
         this.printWriter = printWriter;
     }
 
-    public void printInfoCommandWithProduct(String command, String name, int price) {
+    public void printInfoCommandWithProducts(String command, ArrayList<ProductDTO> products) {
         this.printWriter.println("<html><body>");
         switch (command) {
             case ("max"):
@@ -20,7 +22,9 @@ public class HTMLPrinter {
                 this.printWriter.println("<h1>Product with min price: </h1>");
                 break;
         }
-        this.printWriter.println(name + "\t" + price + "</br>");
+        for (ProductDTO product : products) {
+            this.printWriter.println(product.getName() + "\t" + product.getPrice() + "</br>");
+        }
         this.printWriter.println("</body></html>");
     }
 
@@ -38,10 +42,10 @@ public class HTMLPrinter {
         this.printWriter.println("</body></html>");
     }
 
-    public void printAllProducts(ArrayList<String> names, ArrayList<Integer> prices) {
+    public void printAllProducts(ArrayList<ProductDTO> products) {
         this.printWriter.println("<html><body>");
-        for (int i = 0; i < names.size(); i++) {
-            this.printWriter.println(names.get(i) + "\t" + prices.get(i) + "</br>");
+        for (ProductDTO product : products) {
+            this.printWriter.println(product.getName() + "\t" + product.getPrice() + "</br>");
         }
         this.printWriter.println("</body></html>");
     }
